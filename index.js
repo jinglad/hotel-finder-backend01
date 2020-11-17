@@ -8,7 +8,7 @@ require("dotenv").config();
 
 const app = express();
 
-const uri = "mongodb+srv://houseFinder:HouseFinder38@cluster0.vpsgc.mongodb.net/houseFinder?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.vpsgc.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -90,7 +90,7 @@ client.connect((err) => {
 
 });
 
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
