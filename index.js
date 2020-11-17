@@ -29,7 +29,26 @@ client.connect((err) => {
       res.send(documents);
     });
   });
+
+  //Add Order by Client
+  app.post('/addRent', (req, res) => {
+    const file = req.files.file;
+    const { title, location, price, bedroom, bathroom } = req.body;
+    const img = {
+      contentType: file.mimetype,
+      size: file.size,
+      img: Buffer.from(file.data.toString("base64"), "base64"),
+    };
+    rentCollection
+      .insertOne({ title, location, price, bedroom, bathroom, img })
+      .then((result) => {
+        res.send(result.insertedCount > 0);
+      });
+  });
+  
+
 });
+
 
 const port = 5000;
 
