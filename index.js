@@ -19,11 +19,20 @@ app.get("/", (req, res) => {
   res.send("Hotel Finder");
 });
 
-const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+const client = new MongoClient(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 client.connect((err) => {
   const rentCollection = client.db("houseFinder").collection("rentCollection");
-  const requestCollection = client.db("houseFinder").collection("requestCollection");
+  const requestCollection = client
+    .db("houseFinder")
+    .collection("requestCollection");
+
+  const AdminCollection = client
+    .db("houseFinder")
+    .collection("adminCollection");
 
   app.get("/fullBookingList", (req, res) => {
     rentCollection.find({}).toArray((err, documents) => {
@@ -81,13 +90,26 @@ client.connect((err) => {
     });
   });
 
-  app.get('/requests', (req, res) => {
-    requestCollection.find({})
-        .toArray((err, documents) => {
-            res.send(documents);
-        })
-  })
+  app.get("/requests", (req, res) => {
+    requestCollection.find({}).toArray((err, documents) => {
+      res.send(documents);
+    });
+  });
 
+  app.post("/makeAdmin", (req, res) => {
+    let request = req.body;
+    AdminCollection.insertOne(request).then((result) => {
+      res.send(result.insertedCount > 0);
+    });
+  });
+
+  app.get("/isAdmin", (req, res) => {
+    AdminCollection.find({ admin: req.query.email }).toArray(
+      (err, documents) => {
+        res.send(documents);
+      }
+    );
+  });
 });
 
 const port = process.env.PORT || 5000;
